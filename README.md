@@ -4,12 +4,18 @@ Compare saved MCP tool contracts before a release. MCP Surface normalizes comple
 
 Input compatibility means **old accepted inputs fit the new schema**. Output compatibility means **new possible outputs fit the old schema**. An input enum can expand compatibly while the same output enum expansion breaks a consumer's old constraint.
 
-Requires Node.js 24.8 or later. Install the versioned GitHub release archive:
+Requires Node.js 24.8 or later. Install the published npm release:
+
+```sh
+npm install -g @hexmillionaire/mcp-surface@0.1.0
+mcp-surface --help
+mcp-surface compare contracts/baseline.json contracts/current.json
+```
+
+The identical versioned GitHub archive is also available:
 
 ```sh
 npm install -g https://github.com/hexmillionaire/mcp-surface/releases/download/v0.1.0/hexmillionaire-mcp-surface-0.1.0.tgz
-mcp-surface --help
-mcp-surface compare contracts/baseline.json contracts/current.json
 ```
 
 Export your baseline and current artifacts with your trusted SDK or Inspector first. From a checkout, the included fictional examples are ready to run:
