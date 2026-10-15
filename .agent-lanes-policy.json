@@ -2,8 +2,26 @@
   "version": 1,
   "lanes": {
     "development": {
-      "allow": ["src/**", "bin/**", "test/**", "scripts/**", "docs/**", "examples/**", "*.md", "package.json", "package-lock.json", ".github/**", ".gitignore", ".gitattributes", ".editorconfig"],
-      "deny": [".agent-lanes-policy.json", "LICENSE"]
+      "allow": [
+        "src/**",
+        "bin/**",
+        "test/**",
+        "scripts/**",
+        "docs/**",
+        "examples/**",
+        "*.md",
+        "package.json",
+        "package-lock.json",
+        ".github/**",
+        ".gitignore",
+        ".gitattributes",
+        ".editorconfig",
+        "llms.txt"
+      ],
+      "deny": [
+        ".agent-lanes-policy.json",
+        "LICENSE"
+      ]
     }
   }
 }
