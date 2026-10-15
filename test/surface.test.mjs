@@ -68,6 +68,18 @@ test('integer/number, safe integer bounds, strings and arrays are supported', ()
   assert.equal(level(property({ type: 'array', items: true }), property({ type: 'array', items: true, uniqueItems: true })), 'breaking');
 });
 
+test('a value removed from late in a long enum is a breaking witness in both directions', () => {
+  const values = Array.from({ length: 256 }, (_, i) => 'v' + String(i).padStart(3, '0'));
+  const all = { type: 'string', enum: values };
+  const withoutLast = { type: 'string', enum: values.slice(0, 255) };
+  // Input narrowing: the removed old value is still a valid old argument.
+  assert.equal(level(property(all), property(withoutLast)), 'breaking');
+  // Output widening: the new value was never promised by the old output schema.
+  assert.equal(level(property(withoutLast), property(all), 'outputSchema'), 'breaking');
+  assert.equal(level(property(withoutLast), property(all)), 'compatible');
+  assert.equal(compareSchemas(all, withoutLast, workBudget()), 'breaking');
+});
+
 test('empty or constrained-away finite source values never produce a false breaking claim', () => {
   const before = property({ type: 'string', enum: ['a'], minLength: 2 });
   const after = property({ type: 'string', enum: ['a'], minLength: 3 });
