@@ -1,0 +1,23 @@
+# MCP Surface
+
+> Offline CLI and ESM library (`@hexmillionaire/mcp-surface`, Node 24.8+, zero runtime dependencies) that lints a saved MCP `tools/list` JSON artifact and checks two saved artifacts for breaking schema changes. Inputs are compatible when every old accepted input fits the new schema; outputs are compatible when every new possible output fits the old schema. It never starts servers, calls tools, or fetches `$ref`s.
+
+Quick use:
+
+- `npx -y @hexmillionaire/mcp-surface@0.1.0 compare baseline.json current.json` prints a JSON report.
+- `mcp-surface lint FILE`, `mcp-surface normalize FILE > baseline.json`, `--format markdown`, `--fail-on breaking,unknown,review|never`.
+- Exit codes: 0 policy passed; 1 findings failed the policy (default fails on `breaking` and `unknown`); 2 invalid usage, invalid artifact or file error.
+- Input file: `{"tools":[...]}` or a JSON-RPC result envelope `{"result":{"tools":[...]}}`, all pages merged, no `nextCursor`.
+- Finding levels: `breaking` (validated counterexample or removed tool), `unknown` (unsupported keyword such as `$ref`, `anyOf`, `pattern`, `format`, or proof not found), `review` (metadata/annotations changed or missing), `compatible`.
+- Open objects matter: without `additionalProperties: false`, adding a typed optional input property is breaking, because the old schema accepted any value under that name.
+
+## Docs
+
+- [README](https://github.com/hexmillionaire/mcp-surface/blob/main/README.md): workflow, result meanings, CI example
+- [CLI](https://github.com/hexmillionaire/mcp-surface/blob/main/docs/CLI.md): commands, flags, exit codes
+- [API](https://github.com/hexmillionaire/mcp-surface/blob/main/docs/API.md): JavaScript exports and report shape
+- [Boundaries](https://github.com/hexmillionaire/mcp-surface/blob/main/docs/BOUNDARIES.md): supported schema fragment and hard limits
+
+## Examples
+
+- [baseline.json](https://github.com/hexmillionaire/mcp-surface/blob/main/examples/baseline.json), [compatible.json](https://github.com/hexmillionaire/mcp-surface/blob/main/examples/compatible.json), [breaking.json](https://github.com/hexmillionaire/mcp-surface/blob/main/examples/breaking.json)

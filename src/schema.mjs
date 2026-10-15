@@ -145,6 +145,10 @@ function candidates(source, target, tick, depth = 0) {
   const s = isObject(source) ? source : {}; const t = isObject(target) ? target : {};
   const result = [];
   const add = value => { if (result.length < 128) result.push(value); };
+  // proveSubset already checks every finite source value; try the ones the
+  // target rejects first so a removed value late in a long enum is a witness.
+  const finite = own(s, 'const') ? [s.const] : s.enum ?? [];
+  for (const value of finite) if (!matches(value, typeof target === 'boolean' ? target : t, tick)) add(value);
   for (const schema of [s, t]) {
     if (own(schema, 'const')) add(schema.const);
     for (const value of (schema.enum ?? []).slice(0, 32)) add(value);
@@ -155,7 +159,7 @@ function candidates(source, target, tick, depth = 0) {
     let possible = true;
     for (const key of s.required ?? []) {
       const child = own(properties, key) ? properties[key] : s.additionalProperties ?? true;
-      const value = candidates(child, (t.properties ?? {})[key] ?? true, tick, depth + 1).find(value => matches(value, child, tick));
+      const value = candidates(child, own(t.properties ?? {}, key) ? t.properties[key] : true, tick, depth + 1).find(value => matches(value, child, tick));
       if (value === undefined) { possible = false; break; }
       entries.push([key, value]);
     }

@@ -12,6 +12,12 @@ mcp-surface --help
 mcp-surface compare contracts/baseline.json contracts/current.json
 ```
 
+Or run it once without a global install:
+
+```sh
+npx -y @hexmillionaire/mcp-surface@0.1.0 compare contracts/baseline.json contracts/current.json
+```
+
 The identical versioned GitHub archive is also available:
 
 ```sh
@@ -38,6 +44,8 @@ The compatible example exits 0. The breaking example exits 1 because it narrows 
 | review | Descriptions, defaults, annotations or other metadata changed, or a declaration is missing. |
 | unknown | Unsupported schema features, numerical precision, removed output guarantees, incomplete proof or work limits prevent a compatibility conclusion. |
 
+Directions are strict JSON Schema semantics. An object schema without `additionalProperties: false` already accepts any value under any unlisted name, so adding even an optional typed input property is **breaking** (an old caller could have sent that name with another type). Declare `additionalProperties: false` on input objects if adding optional parameters should stay compatible.
+
 Every report says `behaviorVerification: "not-performed"`. Schema compatibility does not establish implementation behavior, read-only operation, permissions, correctness or compatibility with a particular installed client. There is no tool execution, server launching, remote reference resolution, model call or client configuration modification.
 
 The tool shape assumption is MCP **2026-07-28**, with JSON Schema **2020-12**. Modern output schemas may describe any JSON value; input roots must explicitly declare `type: "object"`. Earlier MCP clients and SDKs can impose narrower output restrictions. This is a fragment checker, **not a full JSON Schema metaschema validator or MCP protocol certification tool**. Use a dialect-aware validator and your client/SDK integration tests too.
@@ -54,6 +62,33 @@ node bin/mcp-surface.mjs compare contracts/baseline.json contracts/current.json 
 ```
 
 Default policy fails on `breaking,unknown`. Review findings fail only when requested. Exit 0 means the selected policy passed; exit 1 means findings failed it; exit 2 means invalid input, usage or a file error. `--fail-on never` records findings without failing CI and does not make unknown results verified.
+
+### GitHub Actions
+
+Commit a normalized baseline once (`mcp-surface normalize exported.json > contracts/baseline.json`), then have CI export the current `tools/list` result with your own trusted script and compare:
+
+```yaml
+name: MCP contract
+on: [pull_request]
+permissions:
+  contents: read
+jobs:
+  mcp-surface:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      - run: npm ci
+      # Replace with your own exporter that writes the complete tools/list result.
+      - run: node scripts/export-tools-list.mjs > current.tools.json
+      - run: npx -y @hexmillionaire/mcp-surface@0.1.0 compare contracts/baseline.json current.tools.json --format markdown >> "$GITHUB_STEP_SUMMARY"
+```
+
+The step summary shows the findings table, and the step fails on `breaking` or `unknown` findings (exit 1) or on an invalid artifact (exit 2). After an intentional contract change, regenerate the baseline with `normalize` and commit it in the same pull request.
 
 The included `examples/agent-lanes.tools.json` was captured from real Agent Lanes MCP stdio discovery. Linting it returns unknown for its task-ID regex: this release deliberately does not prove regular-expression constraints.
 
