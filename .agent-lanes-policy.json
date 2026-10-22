@@ -20,7 +20,8 @@
       ],
       "deny": [
         ".agent-lanes-policy.json",
-        "LICENSE"
+        "LICENSE",
+        ".github/workflows/**"
       ]
     }
   }

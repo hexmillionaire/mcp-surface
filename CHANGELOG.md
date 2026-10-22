@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Security: the dogfood policy denies `.github/workflows/**` in every lane. GitHub runs a `pull_request` workflow from the PR head, so a lane that may edit workflow files can rewrite the scope check that gates it and still report green.
+- The scope workflow pins the Agent Lanes action to the 0.4.1 release commit instead of a 0.2.0 commit that predates the hidden-file deny fix.
 - Fixed: removing an input enum value (or adding an output enum value) past the 32nd entry is now reported as breaking instead of unknown.
 - Docs: GitHub Actions example, `npx` usage, open `additionalProperties` behavior, and an `llms.txt` summary for agents.
 - Package metadata: homepage, bugs URL and search keywords.
