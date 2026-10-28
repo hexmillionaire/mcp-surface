@@ -16,7 +16,7 @@ process.stdout.write(JSON.stringify(report, null, 2) + '\n');
 process.exitCode = reportExitCode(report); // breaking + unknown
 ```
 
-From a checkout, import `./src/index.mjs`. `readArtifact(path)` reads and normalizes one stable regular local UTF-8 file with hard bounds and path-free filesystem errors. It does not resolve remote schema references. `parseArtifactJSON(text)` returns bounded parsed JSON and rejects duplicate JSON keys, including escaped aliases; then pass its result to `normalizeArtifact` or a report function. Native `JSON.parse` loses duplicate keys, so use this parser when consuming untrusted text.
+From a checkout, import `./src/index.mjs`. `readArtifact(path)` reads and normalizes one stable regular local UTF-8 file with hard bounds and path-free filesystem errors. It does not resolve remote schema references. `parseArtifactJSON(text)` returns bounded parsed JSON and rejects duplicate JSON keys, including escaped aliases, plus fractional/underflowing literals that round into safe integers; then pass its result to `normalizeArtifact` or a report function. Native `JSON.parse` has already lost duplicate keys and rounded numbers, so use this parser when consuming untrusted text. Direct object callers cannot recover their original numeric spelling.
 
 `normalizeArtifact(value)` accepts a complete result or result envelope and returns a detached, deterministically sorted object. It validates portable names and documented keyword shapes, not the full metaschema. Its synchronous in-memory input must contain enumerable plain JSON data, dense arrays and no cycles, accessors or symbol keys.
 
