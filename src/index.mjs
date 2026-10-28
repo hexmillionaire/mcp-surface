@@ -2,7 +2,7 @@ import { ArtifactError, LIMITS, DIALECT, normalizeArtifact, readArtifact, parseA
 import { schemaUnknowns, metadata, workBudget, WorkLimit, compareSchemas } from './schema.mjs';
 
 export { ArtifactError, LIMITS, DIALECT, normalizeArtifact, readArtifact, parseArtifactJSON };
-export const VERSION = '0.1.0';
+export const VERSION = '0.1.1';
 export const REPORT_VERSION = 1;
 const LEVELS = ['breaking', 'unknown', 'review', 'compatible'];
 function collector(kind) {

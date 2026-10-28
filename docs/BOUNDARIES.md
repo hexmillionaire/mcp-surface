@@ -34,7 +34,7 @@ An inclusion proof is sufficient, not complete. Failing it does not itself estab
 | Inclusion/matcher work | 500000 visits per comparison |
 | Candidate search | 128 candidates per node, 16 nested search levels, strings up to 1024 and arrays up to 32 elements |
 
-Invalid artifacts/bounds cause an error. Finding/metadata/work truncation is explicitly unknown and fails default policy. JSON numeric integers outside the safe integer range and non-finite numbers are rejected. This intentionally avoids interpreting large integers after JavaScript rounding.
+Invalid artifacts/bounds cause an error. Finding/metadata/work truncation is explicitly unknown and fails default policy. JSON numeric integers outside the safe integer range and non-finite numbers are rejected. Text/file parsing also rejects fractional or underflowing literals that would round into safe integers, such as 1.0000000000000001 or 1e-400. Exact integer spellings such as 1.0, 1e0 and 10e-1 remain accepted. Other fractional schema constraints remain unknown.
 
 Files are read through bounded buffers and checked for changed size, timestamps and identity. Those checks detect ordinary concurrent changes; they are not an authenticity guarantee against an adversary controlling the file. Duplicate object keys are rejected by the provided text/file parser. Direct JavaScript object callers have already lost any original duplicate keys.
 

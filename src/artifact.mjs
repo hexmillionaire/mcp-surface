@@ -42,6 +42,21 @@ function boundTree(value) {
 
 // Scan before JSON.parse to bound nesting and reject duplicate object keys,
 // including escaped aliases. Syntax itself remains the native parser's job.
+function exactSafeInteger(token, number) {
+  const parts = /^(-?)(0|[1-9][0-9]*)(?:\.([0-9]+))?(?:[eE]([+-]?[0-9]+))?$/.exec(token);
+  if (!parts) return true; // The native parser reports invalid number syntax.
+  const fraction = parts[3] ?? '';
+  let digits = (parts[2] + fraction).replace(/^0+/, '');
+  if (!digits) return number === 0;
+  let scale = Number(parts[4] ?? 0) - fraction.length;
+  const trimmed = digits.replace(/0+$/, '');
+  scale += digits.length - trimmed.length;
+  digits = trimmed;
+  if (!Number.isSafeInteger(scale) || scale < 0) return false;
+  const expected = String(Math.abs(number));
+  if (digits.length + scale !== expected.length || (parts[1] === '-') !== (number < 0)) return false;
+  return digits + '0'.repeat(scale) === expected;
+}
 export function parseArtifactJSON(text) {
   if (typeof text !== 'string' || Buffer.byteLength(text, 'utf8') > LIMITS.bytes) throw new ArtifactError('Artifact exceeds the 2 MiB limit.');
   const stack = [];
@@ -66,6 +81,13 @@ export function parseArtifactJSON(text) {
       if (stack.length > LIMITS.depth) throw new ArtifactError('Artifact exceeds the 64-level depth limit.');
     } else if (char === '}' || char === ']') stack.pop();
     else if (char === ',' && stack.at(-1)?.object) stack.at(-1).key = true;
+    else if (char === '-' || (char >= '0' && char <= '9')) {
+      const start = i;
+      while (i + 1 < text.length && /[0-9eE+.-]/.test(text[i + 1])) i++;
+      const token = text.slice(start, i + 1);
+      const number = Number(token);
+      if (Number.isSafeInteger(number) && !exactSafeInteger(token, number)) throw new ArtifactError('JSON number loses precision by rounding into a safe integer. Use exact safe integer constraints.');
+    }
   }
   let value;
   try { value = JSON.parse(text); } catch { throw new ArtifactError('Artifact is not valid JSON.'); }
