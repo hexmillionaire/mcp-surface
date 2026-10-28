@@ -4,7 +4,7 @@
 
 Quick use:
 
-- `npx -y @hexmillionaire/mcp-surface@0.1.0 compare baseline.json current.json` prints a JSON report.
+- `npx -y @hexmillionaire/mcp-surface@0.1.1 compare baseline.json current.json` prints a JSON report.
 - `mcp-surface lint FILE`, `mcp-surface normalize FILE > baseline.json`, `--format markdown`, `--fail-on breaking,unknown,review|never`.
 - Exit codes: 0 policy passed; 1 findings failed the policy (default fails on `breaking` and `unknown`); 2 invalid usage, invalid artifact or file error.
 - Input file: `{"tools":[...]}` or a JSON-RPC result envelope `{"result":{"tools":[...]}}`, all pages merged, no `nextCursor`.

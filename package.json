@@ -1,18 +1,60 @@
 {
   "name": "@hexmillionaire/mcp-surface",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Offline MCP tools/list linter and breaking-change checker: directional input/output JSON Schema compatibility for CI, zero runtime dependencies.",
   "type": "module",
-  "bin": { "mcp-surface": "bin/mcp-surface.mjs" },
+  "bin": {
+    "mcp-surface": "bin/mcp-surface.mjs"
+  },
   "exports": "./src/index.mjs",
-  "files": ["bin", "src", "examples", "docs", "README.md", "llms.txt", "LICENSE", "SECURITY.md", "CHANGELOG.md"],
-  "scripts": { "test": "node --test", "test:package": "node scripts/package-smoke.mjs" },
-  "engines": { "node": ">=24.8.0" },
-  "repository": { "type": "git", "url": "https://github.com/hexmillionaire/mcp-surface.git" },
+  "files": [
+    "bin",
+    "src",
+    "examples",
+    "docs",
+    "README.md",
+    "llms.txt",
+    "LICENSE",
+    "SECURITY.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "test:package": "node scripts/package-smoke.mjs"
+  },
+  "engines": {
+    "node": ">=24.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hexmillionaire/mcp-surface.git"
+  },
   "homepage": "https://github.com/hexmillionaire/mcp-surface#readme",
-  "bugs": { "url": "https://github.com/hexmillionaire/mcp-surface/issues" },
+  "bugs": {
+    "url": "https://github.com/hexmillionaire/mcp-surface/issues"
+  },
   "license": "MIT",
-  "devDependencies": { "ajv": "8.20.0" },
-  "keywords": ["mcp", "model-context-protocol", "mcp-server", "mcp-tools", "tools-list", "json-schema", "schema-diff", "breaking-changes", "compatibility", "contracts", "contract-testing", "lint", "ci", "cli", "offline"],
-  "publishConfig": { "access": "public" }
+  "devDependencies": {
+    "ajv": "8.20.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "mcp-tools",
+    "tools-list",
+    "json-schema",
+    "schema-diff",
+    "breaking-changes",
+    "compatibility",
+    "contracts",
+    "contract-testing",
+    "lint",
+    "ci",
+    "cli",
+    "offline"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

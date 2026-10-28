@@ -169,6 +169,16 @@ test('bounds depth, size, node count, tool count, accessors and cycles before no
   assert.throws(() => normalizeArtifact({ tools: [], data: longPath }), /Pointer limit/);
 });
 
+test('text parsing rejects fractional or underflowing literals rounded into safe integers', () => {
+  for (const literal of ['1.0000000000000001', '9007199254740991.1', '1e-400', '-1e-400']) {
+    assert.throws(() => parseArtifactJSON('{"tools":[],"number":' + literal + '}'), /precision|round/i, literal);
+  }
+  for (const literal of ['1.0', '1e0', '10e-1', '0e-400', '-0.0', '9007199254740991']) {
+    const value = parseArtifactJSON('{"tools":[],"number":' + literal + '}');
+    assert.equal(value.number, Number(literal));
+  }
+});
+
 test('reads regular files only and keeps file errors path-free', async t => {
   const root = await mkdtemp(join(tmpdir(), 'surface-regular-'));
   t.after(() => { assert.equal(root.startsWith(join(tmpdir(), 'surface-regular-')), true); return rm(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }); });

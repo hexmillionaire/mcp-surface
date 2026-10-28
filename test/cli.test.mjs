@@ -2,12 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
-import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const bin = fileURLToPath(new URL('../bin/mcp-surface.mjs', import.meta.url));
+const version = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')).version;
 const example = name => fileURLToPath(new URL('../examples/' + name + '.json', import.meta.url));
 function run(args) {
   return new Promise((resolve, reject) => {
@@ -21,7 +22,7 @@ function run(args) {
   });
 }
 test('CLI normalization, reports, policy and usage have distinct exit meanings', async () => {
-  assert.equal((await run(['--version'])).stdout.trim(), '0.1.0');
+  assert.equal((await run(['--version'])).stdout.trim(), version);
   const normalized = await run(['normalize', example('baseline')]);
   assert.equal(normalized.code, 0);
   assert.equal(JSON.parse(normalized.stdout).tools[0].name, 'fetch_record');
@@ -83,4 +84,17 @@ test('saved control characters remain data in JSON and are escaped in Markdown a
   assert.equal(invalid.code, 2);
   assert.doesNotMatch(invalid.stderr, /[\u0000-\u0009\u000b-\u001f\u007f-\u009f]/);
   assert.match(invalid.stderr, /\\u001b/);
+});
+
+test('file comparison rejects numeric rounding aliases before they can appear unchanged', async t => {
+  const root = await mkdtemp(join(tmpdir(), 'surface precision-'));
+  t.after(() => { assert.equal(root.startsWith(join(tmpdir(), 'surface precision-')), true); return rm(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }); });
+  const baseline = join(root, 'baseline.json');
+  const current = join(root, 'current.json');
+  await writeFile(baseline, '{"tools":[{"name":"x","inputSchema":{"type":"object"},"outputSchema":{"enum":[1.0000000000000001]}}]}');
+  await writeFile(current, '{"tools":[{"name":"x","inputSchema":{"type":"object"},"outputSchema":{"enum":[1]}}]}');
+  const result = await run(['compare', baseline, current]);
+  assert.equal(result.code, 2);
+  assert.equal(result.stdout, '');
+  assert.match(result.stderr, /loses precision/);
 });

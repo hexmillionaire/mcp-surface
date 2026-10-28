@@ -4,10 +4,10 @@ Compare saved MCP tool contracts before a release. MCP Surface normalizes comple
 
 Input compatibility means **old accepted inputs fit the new schema**. Output compatibility means **new possible outputs fit the old schema**. An input enum can expand compatibly while the same output enum expansion breaks a consumer's old constraint.
 
-Requires Node.js 24.8 or later. Install the published npm release:
+Requires Node.js 24.8 or later; use a current patched Node 24 or 26 LTS runtime. The commands below target version 0.1.1 when its release is published:
 
 ```sh
-npm install -g @hexmillionaire/mcp-surface@0.1.0
+npm install -g @hexmillionaire/mcp-surface@0.1.1
 mcp-surface --help
 mcp-surface compare contracts/baseline.json contracts/current.json
 ```
@@ -15,13 +15,13 @@ mcp-surface compare contracts/baseline.json contracts/current.json
 Or run it once without a global install:
 
 ```sh
-npx -y @hexmillionaire/mcp-surface@0.1.0 compare contracts/baseline.json contracts/current.json
+npx -y @hexmillionaire/mcp-surface@0.1.1 compare contracts/baseline.json contracts/current.json
 ```
 
-The identical versioned GitHub archive is also available:
+The versioned GitHub archive is an alternative after release:
 
 ```sh
-npm install -g https://github.com/hexmillionaire/mcp-surface/releases/download/v0.1.0/hexmillionaire-mcp-surface-0.1.0.tgz
+npm install -g https://github.com/hexmillionaire/mcp-surface/releases/download/v0.1.1/hexmillionaire-mcp-surface-0.1.1.tgz
 ```
 
 Export your baseline and current artifacts with your trusted SDK or Inspector first. From a checkout, the included fictional examples are ready to run:
@@ -85,7 +85,7 @@ jobs:
       - run: npm ci
       # Replace with your own exporter that writes the complete tools/list result.
       - run: node scripts/export-tools-list.mjs > current.tools.json
-      - run: npx -y @hexmillionaire/mcp-surface@0.1.0 compare contracts/baseline.json current.tools.json --format markdown >> "$GITHUB_STEP_SUMMARY"
+      - run: npx -y @hexmillionaire/mcp-surface@0.1.1 compare contracts/baseline.json current.tools.json --format markdown >> "$GITHUB_STEP_SUMMARY"
 ```
 
 The step summary shows the findings table, and the step fails on `breaking` or `unknown` findings (exit 1) or on an invalid artifact (exit 2). After an intentional contract change, regenerate the baseline with `normalize` and commit it in the same pull request.
