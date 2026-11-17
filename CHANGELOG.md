@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Releases publish from `.github/workflows/publish.yml` on a version tag, using npm trusted publishing (OIDC, no stored token) with a provenance attestation.
+
 ## 0.1.1
 
 - Reject fractional or underflowing JSON literals that JavaScript would round into safe integers before compatibility checks; exact integer spellings such as 1.0 and 1e0 remain supported.
